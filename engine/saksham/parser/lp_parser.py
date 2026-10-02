@@ -281,11 +281,11 @@ class LPParser(AbstractModelParser):
             
             # Map sense
             if raw_sense in ["<=", "<"]:
-                csense = ConstraintSense.LE
+                csense = ConstraintSense.LESS_EQUAL
             elif raw_sense in ["==", "="]:
-                csense = ConstraintSense.EQ
+                csense = ConstraintSense.EQUAL
             elif raw_sense in [">=", ">"]:
-                csense = ConstraintSense.GE
+                csense = ConstraintSense.GREATER_EQUAL
             else:
                 raise ModelParseError(f"Unknown constraint sense: '{raw_sense}'", file_path=file_path)
 
