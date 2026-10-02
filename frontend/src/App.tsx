@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import type { NavItem } from './components/Sidebar';
 import { MetricCard } from './components/MetricCard';
+import { PipelinePanel } from './components/PipelinePanel';
 import { fetchHealth, fetchSystemInfo } from './api/client';
 import type { SystemHealthResponse, SystemInfoResponse } from './api/client';
 import {
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState<NavItem>('overview');
+  const [currentTab, setCurrentTab] = useState<NavItem>('upload');
   const [health, setHealth] = useState<SystemHealthResponse | null>(null);
   const [systemInfo, setSystemInfo] = useState<SystemInfoResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,17 +51,17 @@ export const App: React.FC = () => {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold">
-                    PHASE 1 ACTIVE
+                    PHASE 8 ACTIVE
                   </span>
                   <span className="text-xs font-mono text-slate-400">
-                    SCAFFOLDING & FOUNDATION COMPLETE
+                    END-TO-END SOLVE PIPELINE AVAILABLE
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-slate-100 mt-2">
                   Structure-Aware Optimization Cockpit
                 </h2>
                 <p className="text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
-                  SAKSHAM analyzes the mathematical topology (conservation laws, inventory balances, block-angular structures, dynamic scaling) before sending problems to numerical solvers.
+                  SAKSHAM parses LP/MPS models, analyzes sparse structure and numerical health, recommends a solver approach, then checks the returned primal solution and records a certificate.
                 </p>
               </div>
 
@@ -84,6 +85,8 @@ export const App: React.FC = () => {
               </div>
             )}
           </div>
+
+          {currentTab === 'upload' && <PipelinePanel />}
 
           {/* Core Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -110,10 +113,10 @@ export const App: React.FC = () => {
             />
             <MetricCard
               label="Active Pipeline"
-              value="Phase 1: Foundation"
-              subtext={systemInfo?.app_name ? `${systemInfo.app_name} Scaffolding` : 'Phase 2 (Parser) next'}
-              statusBadge="IN PROGRESS"
-              badgeType="info"
+              value="Phase 8: End-to-End"
+              subtext={systemInfo?.app_name ? `${systemInfo.app_name} LP/MPS workflow` : 'Analysis through verification'}
+              statusBadge="AVAILABLE"
+              badgeType="success"
             />
           </div>
 
@@ -125,10 +128,10 @@ export const App: React.FC = () => {
                   <div>
                     <h3 className="text-base font-semibold text-slate-100 flex items-center space-x-2">
                       <Layers className="w-5 h-5 text-industrial-sovereign" />
-                      <span>Phase 1 Architecture & Modular Components</span>
+                      <span>Implemented Optimization Pipeline</span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-1">
-                      Strict verification of all 10 core modules and their implementation status.
+                      Current implementation status for the model processing and solve stages.
                     </p>
                   </div>
                   <span className="text-xs font-mono text-slate-400 bg-industrial-950 px-2.5 py-1 rounded border border-industrial-800">
@@ -142,56 +145,56 @@ export const App: React.FC = () => {
                       name: '1. Canonical Model (CIR)',
                       status: 'IMPLEMENTED',
                       badge: 'success',
-                      desc: 'Compressed Sparse Row (CSR) and Column (CSC) matrix representation with mathematical bounds and variable types.',
+                      desc: 'Solver-independent sparse model with bounds, senses, and variable types.',
                       phase: 'Phase 1'
                     },
                     {
                       name: '2. Model Parser (LP / MPS)',
-                      status: 'SCHEDULED (Phase 2)',
-                      badge: 'neutral',
-                      desc: 'Parses standard CPLEX LP and fixed/free MPS files into CanonicalModel without data loss.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'LP and MPS input is converted into CanonicalModel.',
                       phase: 'Phase 2'
                     },
                     {
                       name: '3. Structural Fingerprinting',
-                      status: 'SCHEDULED (Phase 3)',
-                      badge: 'neutral',
-                      desc: 'Analyzes density, condition estimates, dynamic range, and classifies conservation vs knapsack rows.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Computes sparse structure metrics and conservative structural signals.',
                       phase: 'Phase 3'
                     },
                     {
                       name: '4. Industrial Structure Graph (ISG)',
-                      status: 'SCHEDULED (Phase 4)',
-                      badge: 'neutral',
-                      desc: 'Bipartite variable-constraint graph, binary conflict graph, and network flow subgraph generation.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Builds weighted variable, constraint, and objective relationships.',
                       phase: 'Phase 4'
                     },
                     {
                       name: '5. Strategy Selection Engine',
-                      status: 'SCHEDULED (Phase 5)',
-                      badge: 'neutral',
-                      desc: 'Automated recommendation of Dual Simplex, IPM, Benders, or Scaling with explainable rationale.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Produces explainable heuristic recommendations from measured evidence.',
                       phase: 'Phase 5'
                     },
                     {
                       name: '6. Optimization Engine (HiGHS)',
-                      status: 'SCHEDULED (Phase 6)',
-                      badge: 'neutral',
-                      desc: 'Unified solver backend adapter with streaming iteration telemetry callbacks.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Runs LP and supported mixed-integer models through the registered HiGHS backend.',
                       phase: 'Phase 6'
                     },
                     {
                       name: '7. Sakshi Independent Verifier',
-                      status: 'SCHEDULED (Phase 7)',
-                      badge: 'neutral',
-                      desc: 'Zero-trust verification validating solution against original unscaled constraints.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Checks primal feasibility, bounds, integrality, and objective consistency; it does not prove optimality.',
                       phase: 'Phase 7'
                     },
                     {
                       name: '8. Solve Certificate Generator',
-                      status: 'SCHEDULED (Phase 8)',
-                      badge: 'neutral',
-                      desc: 'Cryptographic SHA-256 sealed certificate with primal/dual residuals and Farkas rays.',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Records solver-reported data separately from SAKSHI checks with a deterministic SHA-256 digest.',
                       phase: 'Phase 8'
                     },
                     {
@@ -233,7 +236,7 @@ export const App: React.FC = () => {
               </div>
             )}
 
-            {currentTab !== 'overview' && (
+            {currentTab !== 'overview' && currentTab !== 'upload' && (
               <div className="text-center py-12 space-y-4">
                 <div className="w-12 h-12 mx-auto rounded-full bg-industrial-850 border border-industrial-700 flex items-center justify-center text-industrial-sovereign">
                   <Clock className="w-6 h-6" />
@@ -243,11 +246,11 @@ export const App: React.FC = () => {
                     {currentTab.replace('_', ' ')} Module Interface
                   </h3>
                   <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                    This component interface has been defined in Phase 1 scaffolding and is scheduled for implementation in its corresponding development phase.
+                    Detailed module views are not part of this dashboard yet. Run a model from Model Upload to inspect live pipeline results.
                   </p>
                 </div>
                 <div className="inline-block px-3 py-1 rounded bg-industrial-950 border border-industrial-800 text-xs font-mono text-industrial-accent">
-                  Status: Minimal Interface Scaffolded (No Fake Data)
+                  Status: No Dedicated Detail View
                 </div>
               </div>
             )}

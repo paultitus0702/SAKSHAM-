@@ -123,11 +123,11 @@ class MPSParser(AbstractModelParser):
         for rname in constr_names:
             rtype = row_types[rname]
             if rtype == "L":
-                constraint_senses.append(ConstraintSense.LE)
+                constraint_senses.append(ConstraintSense.LESS_EQUAL)
             elif rtype == "E":
-                constraint_senses.append(ConstraintSense.EQ)
+                constraint_senses.append(ConstraintSense.EQUAL)
             elif rtype == "G":
-                constraint_senses.append(ConstraintSense.GE)
+                constraint_senses.append(ConstraintSense.GREATER_EQUAL)
             else:
                 raise ModelParseError(f"Unexpected constraint row type: {rtype}", file_path=file_path)
 
