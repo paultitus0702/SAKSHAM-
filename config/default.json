@@ -1,0 +1,20 @@
+{
+  "system": {
+    "app_name": "SAKSHAM",
+    "version": "0.1.0-alpha",
+    "environment": "development",
+    "log_level": "INFO"
+  },
+  "backend": {
+    "host": "127.0.0.1",
+    "port": 8000,
+    "cors_origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+    "db_url": "sqlite:///./backend/saksham.db"
+  },
+  "engine": {
+    "default_solver": "highs",
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-6,
+    "dynamic_range_warning_threshold": 1e7
+  }
+}
