@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "source_index": "https://www.netlib.org/lp/data/",
+  "benchmarks": [
+    {
+      "name": "afiro",
+      "filename": "afiro.mps",
+      "source_type": "AUTHENTIC_NETLIB",
+      "source_identifier": "https://www.netlib.org/lp/data/afiro",
+      "expected_category": null,
+      "notes": null
+    },
+    {
+      "name": "adlittle",
+      "filename": "adlittle.mps",
+      "source_type": "AUTHENTIC_NETLIB",
+      "source_identifier": "https://www.netlib.org/lp/data/adlittle",
+      "expected_category": null,
+      "notes": null
+    },
+    {
+      "name": "blend",
+      "filename": "blend.mps",
+      "source_type": "AUTHENTIC_NETLIB",
+      "source_identifier": "https://www.netlib.org/lp/data/blend",
+      "expected_category": null,
+      "notes": null
+    }
+  ]
+}

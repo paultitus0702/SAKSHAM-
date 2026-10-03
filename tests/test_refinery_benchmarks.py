@@ -177,4 +177,4 @@ def test_backend_phase_metadata_keeps_netlib_separate():
     modules = response.json()["modules"]
     assert modules["refinery_scenario"] == "IMPLEMENTED_PHASE_10"
     assert modules["refinery_benchmarks"] == "IMPLEMENTED_PHASE_10"
-    assert modules["netlib_benchmarks"] == "SCHEDULED_PHASE_11"
+    assert modules["netlib_benchmarks"] == "IMPLEMENTED_PHASE_11_FILES_REQUIRED"

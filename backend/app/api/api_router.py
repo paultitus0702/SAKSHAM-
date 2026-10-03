@@ -74,7 +74,7 @@ def get_system_info() -> Dict[str, Any]:
             "solve_certificate": "IMPLEMENTED",
             "refinery_scenario": "IMPLEMENTED_PHASE_10",
             "refinery_benchmarks": "IMPLEMENTED_PHASE_10",
-            "netlib_benchmarks": "SCHEDULED_PHASE_11"
+            "netlib_benchmarks": "IMPLEMENTED_PHASE_11_FILES_REQUIRED"
         }
     }
 

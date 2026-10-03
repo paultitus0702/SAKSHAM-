@@ -213,9 +213,9 @@ export const App: React.FC = () => {
                     },
                     {
                       name: '11. Netlib LP Benchmark Suite',
-                      status: 'SCHEDULED (Phase 11)',
+                      status: 'RUNNER READY (FILES REQUIRED)',
                       badge: 'neutral',
-                      desc: 'Authentic Netlib LP validation (afiro, adlittle) for solver integration and objective accuracy.',
+                      desc: 'Validates configured authentic Netlib instances through the existing pipeline when files are supplied.',
                       phase: 'Phase 11'
                     }
                   ].map((m, idx) => (

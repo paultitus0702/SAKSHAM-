@@ -2,6 +2,7 @@
 
 import json
 import asyncio
+import pytest
 
 from fastapi.testclient import TestClient
 
@@ -74,6 +75,26 @@ def test_valid_mps_runs_complete_pipeline(tmp_path):
     assert result.solver_result.objective_value == 2.0
     assert result.verification.status == "VERIFIED"
     assert result.certificate.verification_status == "VERIFIED"
+
+
+@pytest.mark.parametrize("unsupported_section", ["RANGES", "OBJSENSE"])
+def test_unsupported_mps_sections_fail_instead_of_changing_model(unsupported_section, tmp_path):
+    model_path = tmp_path / "unsupported.mps"
+    model_path.write_text(
+        "NAME TEST\nROWS\n N COST\n L LIMIT\nCOLUMNS\n X COST 1 LIMIT 1\n"
+        "RHS\n RHS1 LIMIT 1\n"
+        f"{unsupported_section}\n" +
+        (" RNG1 LIMIT 2\n" if unsupported_section == "RANGES" else " MAX\n") +
+        "ENDATA\n",
+        encoding="utf-8",
+    )
+
+    result = run_pipeline(model_path)
+
+    assert result.success is False
+    assert result.stage == "PARSER"
+    assert result.parser_status == "FAILED"
+    assert unsupported_section in result.errors[0].message
 
 
 def test_existing_lp_fixtures_cover_supported_pipeline_classes():
