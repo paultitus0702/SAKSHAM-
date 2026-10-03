@@ -141,8 +141,9 @@ def solve_uploaded_model(file: UploadFile = File(...)) -> JSONResponse:
             )
             return JSONResponse(status_code=500, content=failure.to_dict())
         finally:
-            file.file.close()
-            @api_router.get("/benchmarks/netlib")
+             file.file.close()
+
+@api_router.get("/benchmarks/netlib")
 def get_netlib_benchmarks() -> Dict[str, Any]:
     """Return configured authentic Netlib benchmark metadata."""
     runner = NetlibRunner()
