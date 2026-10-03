@@ -10,6 +10,7 @@ import numpy as np
 from scipy import sparse
 
 from .base import AbstractModelParser, ModelParseError
+from .netlib_mps import expand_netlib_compressed_mps, is_netlib_compressed_mps
 from ..canonical.model import CanonicalModel, ObjectiveSense, ConstraintSense, VarType
 from ..canonical.validator import ModelValidator
 
@@ -40,6 +41,8 @@ class MPSParser(AbstractModelParser):
         file_path: Optional[str] = None
     ) -> CanonicalModel:
         """Parse MPS formulation from raw text string."""
+        if is_netlib_compressed_mps(content):
+            content = expand_netlib_compressed_mps(content, file_path=file_path)
         raw_lines = content.splitlines()
         
         # 1. Clean comment lines and empty lines
@@ -55,6 +58,15 @@ class MPSParser(AbstractModelParser):
 
         # 2. Split into major sections
         sections = self._split_sections(cleaned, file_path)
+        for unsupported_section in ("RANGES", "OBJSENSE"):
+            if unsupported_section in sections:
+                line_num, line = sections[unsupported_section][0]
+                raise ModelParseError(
+                    f"MPS {unsupported_section} sections are not supported.",
+                    line_num=line_num,
+                    line_text=line,
+                    file_path=file_path,
+                )
 
         # 3. Process NAME
         parsed_name = self._parse_name(sections.get("NAME", []))
@@ -163,7 +175,16 @@ class MPSParser(AbstractModelParser):
         sections: Dict[str, List[Tuple[int, str]]] = {}
         current_section: Optional[str] = None
 
-        known_headers = {"NAME", "ROWS", "COLUMNS", "RHS", "RANGES", "BOUNDS", "ENDATA"}
+        known_headers = {
+            "NAME",
+            "OBJSENSE",
+            "ROWS",
+            "COLUMNS",
+            "RHS",
+            "RANGES",
+            "BOUNDS",
+            "ENDATA",
+        }
 
         for line_num, raw_line in cleaned_lines:
             tokens = raw_line.split()

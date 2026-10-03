@@ -20,9 +20,9 @@ Implemented through Phase 10:
 9. **Audit, Security, and Reliability**: Phase 9 architecture/security/reliability audit completed; documented limitations remain explicit.
 10. **Synthetic Industrial Benchmarks**: Offline, seeded refinery-style planning LP/MILP suite exercised through the existing analysis, solve, verification, and certificate pipeline. Models are illustrative and are not real refinery data.
 
-Planned future capability:
+Implemented benchmark runner; authentic execution requires user-supplied Netlib files:
 
-11. **Netlib Benchmark Validation**: Authentic Netlib LP benchmark verification (`afiro`, `adlittle`); external benchmark execution remains separate from the synthetic Phase 10 suite.
+11. **Netlib Benchmark Validation**: Metadata-driven validation for `afiro`, `adlittle`, and `blend`, separate from the synthetic Phase 10 suite. No authentic benchmark files are currently included.
 
 ---
 
@@ -32,6 +32,30 @@ Planned future capability:
 - **Backend API (`backend/`)**: FastAPI health/system endpoints and a synchronous LP/MPS upload-and-solve endpoint. Job queues, persistence, and Server-Sent Events (SSE) are not implemented.
 - **Frontend Dashboard (`frontend/`)**: React + Vite + Tailwind CSS dark-industrial cockpit.
 - **Configuration (`config/`)**: Shared local defaults; separate Docker and cluster configurations are future work.
+
+## Phase 11: Authentic Netlib Validation
+
+Netlib provides public linear-programming instances for checking that the existing SAKSHAM parser and solve pipeline can process established model files. The Phase 11 runner does not download data and does not substitute synthetic refinery models.
+
+The configured candidates are `afiro`, `adlittle`, and `blend`. Netlib publishes these in its [LP data index](https://www.netlib.org/lp/data/) using its compact `emps` MPS encoding. Place the original selected files in `data/netlib/` using the configured `.mps` filenames; SAKSHAM validates their stream checksums and expands the supported encoding before passing standard MPS text to the existing parser. Ordinary supported MPS files can also be supplied through `NetlibRunner` using its configurable input directory.
+
+Run one candidate, a selected list, or all configured candidates through the existing Phase 8 pipeline:
+
+```python
+from pathlib import Path
+from saksham.benchmarks import NetlibRunner
+
+runner = NetlibRunner(benchmark_directory=Path("data/netlib"))
+one = runner.run_benchmark("afiro")
+selected = runner.run_benchmarks(["afiro", "blend"])
+all_configured = runner.run_all()
+```
+
+Each result reports the declared source type, file/source identifier, parser status, model dimensions, sparse structure, numerical health, strategy, solver status/objective/time, SAKSHI status, certificate status/digest, warnings, and any failure stage/code/message. `AUTHENTIC_NETLIB` comes from the metadata entry and is a provenance declaration, not a content signature; discovered files without matching metadata are `UNCLASSIFIED_INPUT`. Offline test models are marked `SYNTHETIC_TEST_FIXTURE`.
+
+A successful result requires the shared pipeline to complete with a `FEASIBLE` or `OPTIMAL` solver status, `VERIFIED` SAKSHI checks, and a generated certificate. SAKSHI checks feasibility and objective consistency; it does not independently prove global optimality. Missing authentic files are reported as `INPUT_NOT_FOUND`, with unavailable measurements left null. The runner currently reports all three configured candidates as unavailable until their files are supplied.
+
+The current MPS parser rejects `RANGES` and `OBJSENSE` sections rather than silently changing model semantics. The LP parser supports a CPLEX-style linear subset, not quadratic, SOS, or other advanced sections. Parser compatibility and solver/verification status are reported per file; one failed benchmark does not stop the rest of the set.
 
 ---
 
