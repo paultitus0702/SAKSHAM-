@@ -2,6 +2,7 @@
 Root API Router for SAKSHAM Backend.
 Provides health/system information and the synchronous model-solve pipeline.
 """
+from saksham.benchmarks.netlib_runner import NetlibRunner
 from pathlib import Path
 import tempfile
 from typing import Any, Dict
@@ -141,3 +142,30 @@ def solve_uploaded_model(file: UploadFile = File(...)) -> JSONResponse:
             return JSONResponse(status_code=500, content=failure.to_dict())
         finally:
             file.file.close()
+            @api_router.get("/benchmarks/netlib")
+def get_netlib_benchmarks() -> Dict[str, Any]:
+    """Return configured authentic Netlib benchmark metadata."""
+    runner = NetlibRunner()
+
+    return {
+        "source_type": "AUTHENTIC_NETLIB",
+        "count": len(runner.metadata),
+        "benchmarks": [
+            {
+                "name": benchmark.name,
+                "filename": benchmark.filename,
+                "source_type": benchmark.source_type,
+                "source_identifier": benchmark.source_identifier,
+                "expected_category": benchmark.expected_category,
+                "notes": benchmark.notes,
+            }
+            for benchmark in runner.metadata
+        ],
+    }
+
+
+@api_router.get("/benchmarks/netlib/{benchmark_name}")
+def run_netlib_benchmark(benchmark_name: str) -> Dict[str, Any]:
+    """Execute one authentic Netlib benchmark through the shared pipeline."""
+    runner = NetlibRunner()
+    return runner.run_benchmark(benchmark_name)

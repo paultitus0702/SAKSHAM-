@@ -6,6 +6,7 @@ import { MetricCard } from './components/MetricCard';
 import { PipelinePanel } from './components/PipelinePanel';
 import { fetchHealth, fetchSystemInfo } from './api/client';
 import type { SystemHealthResponse, SystemInfoResponse } from './api/client';
+import { BenchmarkSuite } from './components/BenchmarkSuite';
 import {
   Clock,
   Layers,
@@ -87,6 +88,7 @@ export const App: React.FC = () => {
           </div>
 
           {currentTab === 'upload' && <PipelinePanel />}
+          {currentTab === 'benchmarks' && <BenchmarkSuite />}
 
           {/* Core Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

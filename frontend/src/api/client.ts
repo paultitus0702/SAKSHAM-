@@ -151,3 +151,80 @@ export async function submitModel(file: File): Promise<PipelineResultResponse> {
   }
   return result;
 }
+
+export interface NetlibBenchmarkMetadata {
+  name: string;
+  filename: string;
+  source_type: string;
+  source_identifier: string | null;
+  expected_category: string | null;
+  notes: string | null;
+}
+
+export interface NetlibBenchmarkListResponse {
+  source_type: string;
+  count: number;
+  benchmarks: NetlibBenchmarkMetadata[];
+}
+
+export interface NetlibBenchmarkResult {
+  benchmark_name: string;
+  source_type: string;
+  source_identifier: string | null;
+  input_path: string | null;
+  parser_status: string;
+  model_dimensions: {
+    variables: number;
+    constraints: number;
+  } | null;
+  nonzeros: number | null;
+  density: number | null;
+  numerical_health_status: string;
+  recommended_strategy: {
+    primary_strategy: string;
+    primary_algorithm: string;
+    status: string;
+    confidence: string;
+  } | null;
+  solver_name: string | null;
+  solver_status: string;
+  objective_value: number | null;
+  solve_time_seconds: number | null;
+  sakshi_verification_status: string;
+  certificate_status: string;
+  certificate_digest: string | null;
+  failure_stage: string | null;
+  failure_code: string | null;
+  failure_message: string | null;
+  warnings: string[];
+  success: boolean;
+}
+
+export async function fetchNetlibBenchmarks(): Promise<NetlibBenchmarkListResponse> {
+  const response = await fetch('/api/v1/benchmarks/netlib');
+
+  if (!response.ok) {
+    throw new Error(`Benchmark list failed with status: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function runNetlibBenchmark(
+  benchmarkName: string
+): Promise<NetlibBenchmarkResult> {
+  const response = await fetch(
+    `/api/v1/benchmarks/netlib/${encodeURIComponent(benchmarkName)}`
+  );
+
+  const result = await response.json() as NetlibBenchmarkResult;
+
+  if (!response.ok) {
+    throw new Error(
+      result.failure_message ||
+      `Benchmark execution failed with status: ${response.status}`
+    );
+  }
+
+  return result;
+}
