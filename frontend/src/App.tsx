@@ -191,21 +191,28 @@ export const App: React.FC = () => {
                       phase: 'Phase 7'
                     },
                     {
-                      name: '8. Solve Certificate Generator',
+                      name: '8. End-to-End Optimization Pipeline',
                       status: 'IMPLEMENTED',
                       badge: 'success',
-                      desc: 'Records solver-reported data separately from SAKSHI checks with a deterministic SHA-256 digest.',
+                      desc: 'Connects model analysis, recommendation, solving, SAKSHI verification, and certificate generation.',
                       phase: 'Phase 8'
                     },
                     {
-                      name: '9. Synthetic Refinery Model',
-                      status: 'SCHEDULED (Phase 10)',
-                      badge: 'neutral',
-                      desc: 'Multi-period refinery planning with crude feeds, octane blending, and tank inventories.',
+                      name: '9. Architecture, Security & Reliability Audit',
+                      status: 'COMPLETED',
+                      badge: 'success',
+                      desc: 'Phase 9 audit completed; documented limitations remain explicit.',
+                      phase: 'Phase 9'
+                    },
+                    {
+                      name: '10. Synthetic Refinery Benchmark Suite',
+                      status: 'IMPLEMENTED',
+                      badge: 'success',
+                      desc: 'Seeded synthetic planning models for feed allocation, blending, inventory, and optional binary operations; not real refinery data.',
                       phase: 'Phase 10'
                     },
                     {
-                      name: '10. Netlib LP Benchmark Suite',
+                      name: '11. Netlib LP Benchmark Suite',
                       status: 'SCHEDULED (Phase 11)',
                       badge: 'neutral',
                       desc: 'Authentic Netlib LP validation (afiro, adlittle) for solver integration and objective accuracy.',

@@ -48,7 +48,9 @@ def get_health() -> Dict[str, Any]:
             "scipy": {
                 "available": True,
                 "version": scipy.__version__,
-                "status": "READY"
+                "status": "READY",
+                "role": "numerical_library",
+                "solver_backend": False,
             }
         },
         "scaffolding_phase": "Phase 8: End-to-End Solve Pipeline Available"
@@ -70,7 +72,8 @@ def get_system_info() -> Dict[str, Any]:
             "solver_backend": "IMPLEMENTED",
             "sakshi_verifier": "IMPLEMENTED",
             "solve_certificate": "IMPLEMENTED",
-            "refinery_scenario": "SCHEDULED_PHASE_10",
+            "refinery_scenario": "IMPLEMENTED_PHASE_10",
+            "refinery_benchmarks": "IMPLEMENTED_PHASE_10",
             "netlib_benchmarks": "SCHEDULED_PHASE_11"
         }
     }

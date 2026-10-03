@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Mapping, Optional, Union
 import numpy as np
 
 from ..canonical.model import CanonicalModel
-from ..canonical.validator import ModelValidator
+from ..canonical.validator import ModelValidationError, ModelValidator
 from ..certificate.cert_builder import SolveCertificate, SolveCertificateGenerator
 from ..fingerprint.analyzer import FingerprintResult, StructuralFingerprinter
 from ..health.conditioner import HealthReport, NumericalHealthMonitor
@@ -88,52 +88,24 @@ class PipelineResult:
 
 
 def run_pipeline(
-    file_path: Union[str, Path],
+    file_path: Union[str, Path, CanonicalModel],
     configuration: Optional[Union[PipelineConfiguration, Mapping[str, Any]]] = None,
     *,
     solver_registry: Optional[SolverRegistry] = None,
     input_name: Optional[str] = None,
 ) -> PipelineResult:
     """Run parser → analysis → recommendation → solve → verification → certificate."""
-    path = Path(file_path) if file_path is not None else None
-    result = PipelineResult(input_name=input_name or (path.name if path else None))
-    if path is None:
-        return _record_error(result, "INPUT", "A model file path is required.", "MISSING_INPUT")
-    if not path.is_file():
-        return _record_error(result, "INPUT", "The requested model file does not exist.", "FILE_NOT_FOUND")
-
-    extension = path.suffix.lower()
-    result.input_format = extension.removeprefix(".")
-    parser_by_extension = {".lp": LPParser, ".mps": MPSParser}
-    parser_type = parser_by_extension.get(extension)
-    if parser_type is None:
-        return _record_error(
-            result,
-            "PARSER",
-            f"Unsupported model extension '{extension or '(none)'}'; expected .lp or .mps.",
-            "UNSUPPORTED_FORMAT",
+    if isinstance(file_path, CanonicalModel):
+        model = file_path
+        result = PipelineResult(
+            input_name=input_name or model.name,
+            input_format="canonical",
+            parser_status="BYPASSED",
         )
-
-    result.stage = "PARSER"
-    try:
-        model = parser_type().parse_file(path)
-        result.parser_status = "OK"
-    except (ModelParseError, OSError, UnicodeError, ValueError) as error:
-        return _record_error(
-            result,
-            "PARSER",
-            _safe_error_message(error, path),
-            "PARSE_FAILED",
-            parser_status="FAILED",
-        )
-    except Exception as error:
-        return _record_error(
-            result,
-            "PARSER",
-            _safe_error_message(error, path),
-            "PARSER_ERROR",
-            parser_status="FAILED",
-        )
+    else:
+        result, model = _parse_model_input(file_path, input_name)
+        if model is None:
+            return result
 
     result.stage = "CANONICAL_MODEL"
     try:
@@ -273,6 +245,64 @@ def run_pipeline(
     result.status = "COMPLETE" if result.success else "PARTIAL"
     result.stage = "COMPLETE" if result.success else result.stage
     return result
+
+
+def _parse_model_input(
+    file_path: Union[str, Path, None],
+    input_name: Optional[str],
+) -> tuple[PipelineResult, Optional[CanonicalModel]]:
+    path = Path(file_path) if file_path is not None else None
+    result = PipelineResult(input_name=input_name or (path.name if path else None))
+    if path is None:
+        return _record_error(
+            result, "INPUT", "A model file path is required.", "MISSING_INPUT"
+        ), None
+    if not path.is_file():
+        return _record_error(
+            result, "INPUT", "The requested model file does not exist.", "FILE_NOT_FOUND"
+        ), None
+
+    extension = path.suffix.lower()
+    result.input_format = extension.removeprefix(".")
+    parser_by_extension = {".lp": LPParser, ".mps": MPSParser}
+    parser_type = parser_by_extension.get(extension)
+    if parser_type is None:
+        return _record_error(
+            result,
+            "PARSER",
+            f"Unsupported model extension '{extension or '(none)'}'; expected .lp or .mps.",
+            "UNSUPPORTED_FORMAT",
+        ), None
+
+    result.stage = "PARSER"
+    try:
+        model = parser_type().parse_file(path)
+        result.parser_status = "OK"
+        return result, model
+    except ModelValidationError as error:
+        return _record_error(
+            result,
+            "CANONICAL_MODEL",
+            "; ".join(error.errors),
+            "MODEL_INVALID",
+            parser_status="OK",
+        ), None
+    except (ModelParseError, OSError, UnicodeError, ValueError) as error:
+        return _record_error(
+            result,
+            "PARSER",
+            _safe_error_message(error, path),
+            "PARSE_FAILED",
+            parser_status="FAILED",
+        ), None
+    except Exception as error:
+        return _record_error(
+            result,
+            "PARSER",
+            _safe_error_message(error, path),
+            "PARSER_ERROR",
+            parser_status="FAILED",
+        ), None
 
 
 def _configuration(

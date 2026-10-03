@@ -1,7 +1,4 @@
-"""
-SAKSHAM Backend Configuration Module.
-Loads root config/default.json with environment variable overrides.
-"""
+"""Load the shared root ``config/default.json`` backend and engine settings."""
 import json
 import os
 from pathlib import Path

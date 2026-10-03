@@ -17,6 +17,8 @@ export interface SystemHealthResponse {
       available: boolean;
       version: string;
       status: string;
+      role: string;
+      solver_backend: boolean;
     };
   };
   scaffolding_phase: string;

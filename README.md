@@ -1,31 +1,37 @@
 # SAKSHAM (सक्षम)
 ### Sovereign Structure-Aware Sparse Optimization Engine for India's Industrial Planning and Decision Systems
 
-SAKSHAM is a research-grade mathematical optimization platform designed to uncover and exploit macroscopic mathematical topologies (network flows, inventory balance equations, bordered block-angular couplings, and dynamic scale properties) before submitting problems to sparse numerical solvers.
+SAKSHAM ingests LP/MPS models, computes sparse structural and numerical diagnostics, builds weighted variable-constraint relationships, and provides heuristic recommendations before solving through its registered backend.
 
 ---
 
-## Key Capabilities (Planned Across Phases)
+## Current and Planned Capabilities
 
-1. **Model Ingestion**: CPLEX LP and fixed/free MPS parsing into Canonical Internal Representation (CIR).
-2. **Structural Fingerprinting**: Sparsity metrics, dynamic range, conservation rows, and block decomposition.
-3. **Industrial Structure Graph (ISG)**: Multi-layer graph representation (Bipartite, Conflict, Network Flow).
-4. **Strategy Selection**: Structure-aware algorithm and scaling recommendations with explainable technical rationale.
-5. **Optimization Engine**: Integration with open-source HiGHS (`highspy`) with streaming iteration telemetry.
-6. **Numerical Health Monitoring**: Dynamic range and condition estimation warnings before matrix factorization.
-7. **Solve Certificate Generator**: Cryptographic SHA-256 sealed certificates with primal/dual residuals.
-8. **Sakshi Independent Verifier**: Zero-trust validation auditing solutions against original raw constraints.
-9. **Sovereign Industrial Scenarios**: Realistic synthetic industrial models (Refinery Blending, Power Grid, Logistics).
-10. **Benchmark Validation**: Authentic Netlib LP benchmark verification (`afiro`, `adlittle`).
+Implemented through Phase 10:
+
+1. **Model Ingestion**: CPLEX LP and MPS parsing into Canonical Internal Representation (CIR).
+2. **Structural Fingerprinting**: Sparse matrix, coefficient-range, and conservative row-structure signals; no block decomposition is inferred.
+3. **Industrial Structure Graph (ISG)**: Sparse weighted variable-constraint relationships with objective participation.
+4. **Strategy Selection**: Deterministic heuristic recommendations with evidence and candidate labels.
+5. **Optimization Engine**: One registered HiGHS (`highspy`) LP/MILP backend with solve-completion telemetry.
+6. **Numerical Health Monitoring**: Coefficient dynamic range and zero-row/column diagnostics; exact condition estimates are not calculated.
+7. **Solve Certificate Generator**: Deterministic SHA-256 digest separating solver-reported values from SAKSHI checks.
+8. **SAKSHI Independent Verifier**: Primal feasibility, bounds, integrality, and objective-consistency checks. It does not prove dual feasibility, KKT conditions, or global optimality.
+9. **Audit, Security, and Reliability**: Phase 9 architecture/security/reliability audit completed; documented limitations remain explicit.
+10. **Synthetic Industrial Benchmarks**: Offline, seeded refinery-style planning LP/MILP suite exercised through the existing analysis, solve, verification, and certificate pipeline. Models are illustrative and are not real refinery data.
+
+Planned future capability:
+
+11. **Netlib Benchmark Validation**: Authentic Netlib LP benchmark verification (`afiro`, `adlittle`); external benchmark execution remains separate from the synthetic Phase 10 suite.
 
 ---
 
 ## Architecture Overview
 
-- **Core Engine (`engine/`)**: Standalone Python scientific package (`saksham-engine`) using NumPy, SciPy sparse matrices, and NetworkX.
-- **Backend API (`backend/`)**: FastAPI gateway with asynchronous job scheduling, SQLite persistence, and Server-Sent Events (SSE).
+- **Core Engine (`engine/`)**: Standalone Python scientific package (`saksham-engine`) using NumPy, SciPy sparse matrices, and HiGHS. The ISG currently uses its own deterministic node/edge representation.
+- **Backend API (`backend/`)**: FastAPI health/system endpoints and a synchronous LP/MPS upload-and-solve endpoint. Job queues, persistence, and Server-Sent Events (SSE) are not implemented.
 - **Frontend Dashboard (`frontend/`)**: React + Vite + Tailwind CSS dark-industrial cockpit.
-- **Configuration (`config/`)**: Environment-specific configurations for local, Docker, and cluster execution.
+- **Configuration (`config/`)**: Shared local defaults; separate Docker and cluster configurations are future work.
 
 ---
 

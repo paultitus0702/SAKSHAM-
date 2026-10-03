@@ -261,7 +261,7 @@ class LPParser(AbstractModelParser):
         # Pattern matches: [optional_name:] LHS (<=|= |>=|<|>) RHS
         # We can tokenize or scan
         pattern = re.compile(
-            r'(?:(?P<name>[a-zA-Z0-9_#\.\-]+)\s*:)?'  # Optional label
+            r'\s*(?:(?P<name>[a-zA-Z0-9_#\.\-]+)\s*:)?'  # Optional label
             r'(?P<lhs>[^<>=]+)'                       # LHS expression
             r'(?P<sense><=|>=|==|=|<|>)'             # Relational operator
             r'(?P<rhs>\s*[-+]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)' # RHS value

@@ -85,10 +85,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
       <div className="p-3 bg-industrial-950 border border-industrial-800 rounded-lg text-xs space-y-1.5">
         <div className="flex items-center justify-between">
           <span className="text-slate-400 font-mono text-[11px]">ACTIVE PHASE</span>
-          <span className="text-industrial-accent font-mono text-[11px] font-bold">PHASE 8</span>
+          <span className="text-industrial-accent font-mono text-[11px] font-bold">PHASE 10</span>
         </div>
         <p className="text-[11px] text-slate-400 leading-relaxed">
-          LP/MPS analysis, solve, verification, and certificate workflow available.
+          Synthetic industrial benchmark generation and verified optimization workflow available.
         </p>
       </div>
     </aside>
