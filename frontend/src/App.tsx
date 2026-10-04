@@ -4,12 +4,15 @@ import { Sidebar } from './components/Sidebar';
 import type { NavItem } from './components/Sidebar';
 import { MetricCard } from './components/MetricCard';
 import { PipelinePanel } from './components/PipelinePanel';
+import { PipelineModuleView } from './components/PipelineModuleView';
 import { fetchHealth, fetchSystemInfo } from './api/client';
-import type { SystemHealthResponse, SystemInfoResponse } from './api/client';
+import type {
+  PipelineResultResponse,
+  SystemHealthResponse,
+  SystemInfoResponse,
+} from './api/client';
 import { BenchmarkSuite } from './components/BenchmarkSuite';
 import {
-  Clock,
-  Layers,
   AlertTriangle
 } from 'lucide-react';
 
@@ -17,6 +20,8 @@ export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<NavItem>('upload');
   const [health, setHealth] = useState<SystemHealthResponse | null>(null);
   const [systemInfo, setSystemInfo] = useState<SystemInfoResponse | null>(null);
+  const [pipelineResult, setPipelineResult] = useState<PipelineResultResponse | null>(null);
+  const [pipelineRunning, setPipelineRunning] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,9 +92,6 @@ export const App: React.FC = () => {
             )}
           </div>
 
-          {currentTab === 'upload' && <PipelinePanel />}
-          {currentTab === 'benchmarks' && <BenchmarkSuite />}
-
           {/* Core Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <MetricCard
@@ -122,148 +124,22 @@ export const App: React.FC = () => {
             />
           </div>
 
-          {/* Module-Specific Content Panes */}
-          <div className="bg-industrial-900 border border-industrial-800 rounded-xl p-6">
-            {currentTab === 'overview' && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-industrial-800 pb-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-100 flex items-center space-x-2">
-                      <Layers className="w-5 h-5 text-industrial-sovereign" />
-                      <span>Implemented Optimization Pipeline</span>
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Current implementation status for the model processing and solve stages.
-                    </p>
-                  </div>
-                  <span className="text-xs font-mono text-slate-400 bg-industrial-950 px-2.5 py-1 rounded border border-industrial-800">
-                    No fabricated solver data
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    {
-                      name: '1. Canonical Model (CIR)',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Solver-independent sparse model with bounds, senses, and variable types.',
-                      phase: 'Phase 1'
-                    },
-                    {
-                      name: '2. Model Parser (LP / MPS)',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'LP and MPS input is converted into CanonicalModel.',
-                      phase: 'Phase 2'
-                    },
-                    {
-                      name: '3. Structural Fingerprinting',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Computes sparse structure metrics and conservative structural signals.',
-                      phase: 'Phase 3'
-                    },
-                    {
-                      name: '4. Industrial Structure Graph (ISG)',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Builds weighted variable, constraint, and objective relationships.',
-                      phase: 'Phase 4'
-                    },
-                    {
-                      name: '5. Strategy Selection Engine',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Produces explainable heuristic recommendations from measured evidence.',
-                      phase: 'Phase 5'
-                    },
-                    {
-                      name: '6. Optimization Engine (HiGHS)',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Runs LP and supported mixed-integer models through the registered HiGHS backend.',
-                      phase: 'Phase 6'
-                    },
-                    {
-                      name: '7. Sakshi Independent Verifier',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Checks primal feasibility, bounds, integrality, and objective consistency; it does not prove optimality.',
-                      phase: 'Phase 7'
-                    },
-                    {
-                      name: '8. End-to-End Optimization Pipeline',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Connects model analysis, recommendation, solving, SAKSHI verification, and certificate generation.',
-                      phase: 'Phase 8'
-                    },
-                    {
-                      name: '9. Architecture, Security & Reliability Audit',
-                      status: 'COMPLETED',
-                      badge: 'success',
-                      desc: 'Phase 9 audit completed; documented limitations remain explicit.',
-                      phase: 'Phase 9'
-                    },
-                    {
-                      name: '10. Synthetic Refinery Benchmark Suite',
-                      status: 'IMPLEMENTED',
-                      badge: 'success',
-                      desc: 'Seeded synthetic planning models for feed allocation, blending, inventory, and optional binary operations; not real refinery data.',
-                      phase: 'Phase 10'
-                    },
-                    {
-                      name: '11. Netlib LP Benchmark Suite',
-                      status: 'RUNNER READY (FILES REQUIRED)',
-                      badge: 'neutral',
-                      desc: 'Validates configured authentic Netlib instances through the existing pipeline when files are supplied.',
-                      phase: 'Phase 11'
-                    }
-                  ].map((m, idx) => (
-                    <div key={idx} className="p-4 bg-industrial-950/70 border border-industrial-800 rounded-lg flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-slate-200">{m.name}</h4>
-                          <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
-                            m.badge === 'success'
-                              ? 'bg-emerald-950 text-emerald-400 border-emerald-800'
-                              : 'bg-industrial-800 text-slate-400 border-industrial-700'
-                          }`}>
-                            {m.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-2 leading-relaxed">{m.desc}</p>
-                      </div>
-                      <div className="mt-3 pt-2 border-t border-industrial-850 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                        <span>Milestone:</span>
-                        <span className="text-industrial-sovereign">{m.phase}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {currentTab !== 'overview' && currentTab !== 'upload' && (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-12 h-12 mx-auto rounded-full bg-industrial-850 border border-industrial-700 flex items-center justify-center text-industrial-sovereign">
-                  <Clock className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-100 uppercase tracking-wide">
-                    {currentTab.replace('_', ' ')} Module Interface
-                  </h3>
-                  <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                    Detailed module views are not part of this dashboard yet. Run a model from Model Upload to inspect live pipeline results.
-                  </p>
-                </div>
-                <div className="inline-block px-3 py-1 rounded bg-industrial-950 border border-industrial-800 text-xs font-mono text-industrial-accent">
-                  Status: No Dedicated Detail View
-                </div>
-              </div>
-            )}
-          </div>
+          {currentTab === 'upload' && (
+            <PipelinePanel
+              result={pipelineResult}
+              onResultChange={setPipelineResult}
+              onRunningChange={setPipelineRunning}
+            />
+          )}
+          {currentTab === 'benchmarks' && <BenchmarkSuite />}
+          {currentTab !== 'upload' && currentTab !== 'benchmarks' && (
+            <PipelineModuleView
+              tab={currentTab}
+              result={pipelineResult}
+              running={pipelineRunning}
+              onNavigate={setCurrentTab}
+            />
+          )}
         </main>
       </div>
     </div>

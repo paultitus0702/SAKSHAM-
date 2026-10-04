@@ -58,6 +58,10 @@ export interface PipelineResultResponse {
   } | null;
   fingerprint: {
     status: string;
+    num_vars: number;
+    num_constrs: number;
+    num_nonzeros: number;
+    density: number;
     tags: string[];
     conservation_rows_detected: number;
     knapsack_rows_detected: number;
@@ -66,9 +70,16 @@ export interface PipelineResultResponse {
   health: {
     status: string;
     dynamic_range: number | null;
+    estimated_condition_number: number | null;
     numerical_warning: boolean;
+    coefficient_min_abs: number | null;
+    coefficient_max_abs: number | null;
+    nonzero_coefficient_count: number;
+    stored_coefficient_count: number;
+    explicit_zero_count: number;
     zero_row_count: number;
     zero_column_count: number;
+    has_non_finite_coefficients: boolean;
     details: string;
   } | null;
   isg: {
@@ -112,6 +123,7 @@ export interface PipelineResultResponse {
     unavailable_checks: string[];
   } | null;
   certificate: {
+    status: string;
     verification_status: string;
     sha256_hash: string;
     optimality_claim: string;

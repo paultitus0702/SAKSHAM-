@@ -3,6 +3,12 @@ import { AlertTriangle, FileUp, LoaderCircle, Play, ShieldCheck } from 'lucide-r
 import { submitModel } from '../api/client';
 import type { PipelineResultResponse } from '../api/client';
 
+interface PipelinePanelProps {
+  result: PipelineResultResponse | null;
+  onResultChange: (result: PipelineResultResponse | null) => void;
+  onRunningChange: (running: boolean) => void;
+}
+
 const formatNumber = (value: number | null | undefined): string => {
   if (value === null || value === undefined || !Number.isFinite(value)) return 'Unavailable';
   return new Intl.NumberFormat('en', { maximumSignificantDigits: 7 }).format(value);
@@ -21,15 +27,18 @@ const statusColor = (status: string): string => {
   return 'text-amber-300';
 };
 
-export const PipelinePanel: React.FC = () => {
+export const PipelinePanel: React.FC<PipelinePanelProps> = ({
+  result,
+  onResultChange,
+  onRunningChange,
+}) => {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<PipelineResultResponse | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextFile = event.target.files?.[0] ?? null;
-    setResult(null);
+    onResultChange(null);
     setError(null);
     if (nextFile && !/\.(lp|mps)$/i.test(nextFile.name)) {
       setFile(null);
@@ -44,10 +53,11 @@ export const PipelinePanel: React.FC = () => {
     event.preventDefault();
     if (!file || running) return;
     setRunning(true);
-    setResult(null);
+    onRunningChange(true);
+    onResultChange(null);
     setError(null);
     try {
-      setResult(await submitModel(file));
+      onResultChange(await submitModel(file));
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -56,6 +66,7 @@ export const PipelinePanel: React.FC = () => {
       );
     } finally {
       setRunning(false);
+      onRunningChange(false);
     }
   };
 
